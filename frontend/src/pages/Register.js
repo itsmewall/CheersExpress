@@ -1,40 +1,40 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function Login() {
+export default function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const navigate = useNavigate();
+  const [role, setRole] = useState("cliente");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:4000/auth/login", {
+      await axios.post("http://localhost:4000/auth/register", {
+        name,
         email,
         password: senha,
+        role,
       });
-
-      // salva token e role no localStorage
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.user.role);
-
-      // redireciona conforme perfil
-      if (res.data.user.role === "empresa") {
-        navigate("/dashboard");
-      } else {
-        navigate("/cardapio");
-      }
+      alert("Cadastro realizado com sucesso!");
     } catch (err) {
-      alert("Erro no login: " + err.response?.data?.error);
+      alert("Erro no cadastro: " + err.response?.data?.error);
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>🍻 CheersExpress</h2>
+        <h2 style={styles.title}>Criar Conta</h2>
         <form onSubmit={handleSubmit} style={styles.form}>
+          <input
+            style={styles.input}
+            type="text"
+            placeholder="Nome"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <input
             style={styles.input}
             type="email"
@@ -49,12 +49,14 @@ export default function Login() {
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
           />
-          <button style={styles.button} type="submit">
-            Entrar
-          </button>
+          <select style={styles.input} value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="cliente">Cliente</option>
+            <option value="empresa">Empresa</option>
+          </select>
+          <button style={styles.button} type="submit">Cadastrar</button>
         </form>
         <p style={styles.registerText}>
-          Não tem conta? <Link to="/register" style={styles.link}>Criar conta</Link>
+          Já tem conta? <Link to="/" style={styles.link}>Entrar</Link>
         </p>
       </div>
     </div>
